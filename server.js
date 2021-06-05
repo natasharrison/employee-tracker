@@ -4,28 +4,16 @@ const db = require('./db/connection');
 const cTable = require('console.table');
 
 // array of questions for user input 
-const questions = [
+
+
+const mainQuestion = [
   {
     type: 'list',
     name: 'action',
     message: 'What type of action would you like to take?',
     choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update and employee role", "Exit"]
   },
-  // WHEN I choose to add a department
-  // THEN I am prompted to enter the name of the department and that department is added to the database
-  {
-    type: 'input',
-    name: 'department',
-    message: "Please enter the name of the department:",
-    validate: departmentName => {
-      if (departmentName) {
-        return true;
-      } else {
-        console.log('Please enter the name of the department!');
-        return false;
-      }
-    }
-  },
+
   // WHEN I choose to add a role
   // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
   {
@@ -127,9 +115,28 @@ const questions = [
   // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
 ];
 
-inquirer
-  .prompt(questions)
-  .then((answers) => {
+// ask this question once 'add a department' is selected
+const deptQuestion =[
+  // WHEN I choose to add a department
+  // THEN I am prompted to enter the name of the department and that department is added to the database
+  {
+    type: 'input',
+    name: 'department',
+    message: "Please enter the name of the department:",
+    validate: departmentName => {
+      if (departmentName) {
+        return true;
+      } else {
+        console.log('Please enter the name of the department!');
+        return false;
+      }
+    }
+  },
+];
+
+inquirer.prompt(mainQuestion)
+  //answers = {}
+  .then(answers => {
   // WHEN I view all departments
   // I am presented with a formatted table showing department names and department ids
     if (answers.action == "View all departments") {
@@ -154,6 +161,13 @@ inquirer
       function (err, results, fields){
         console.table(results);
       })
+    }
+
+    if(answers.action == "Add a department"){
+      inquirer.prompt(deptQuestion)
+        .then(answers => {
+          console.log(answers);
+        })
     }
 
     // Exit
