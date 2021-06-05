@@ -1,11 +1,9 @@
 INSERT INTO department (department_name)
 VALUES ('Ticket Office'), ('Community Relations'), ('Marketing'), ('Communication Services');
 
--- how do you add department_Id?
 INSERT INTO role (title, salary)
-VALUES ('Director of Ticket Sales', '85,000'), ('Event Coordinator', '42,500'), ('Intern', '12,000'), ('Assistant Coordinator', '45,000'), ('Associate Director', '52,000');
+VALUES ('Director of Ticket Sales', 80500.00), ('Event Coordinator', 45000.00 ), ('Intern', 12000.00), ('Assistant Coordinator', 35000.00), ('Associate Director',55000.00);
 
--- how do you add role_id and manager_id?
 INSERT INTO employee (first_name, last_name)
 VALUES 
 ('James', 'Fraser'),

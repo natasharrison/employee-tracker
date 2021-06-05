@@ -1,6 +1,7 @@
 // imported required packages
 const inquirer = require('inquirer');
-
+const db = require('./db/connection');
+const cTable = require('console.table');
 
 // array of questions for user input 
 const questions = [
@@ -10,17 +11,8 @@ const questions = [
     message: 'What type of action would you like to take?',
     choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update and employee role"]
   },
-// WHEN I view all departments
-// I am presented with a formatted table showing department names and department ids
-
-// WHEN I choose to view all roles
-// THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-  
-// WHEN I choose to view all employees
-// THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
-// WHEN I choose to add a department
-// THEN I am prompted to enter the name of the department and that department is added to the database
+  // WHEN I choose to add a department
+  // THEN I am prompted to enter the name of the department and that department is added to the database
   {
     type: 'input',
     name: 'department',
@@ -33,10 +25,9 @@ const questions = [
         return false;
       }
     }
-    // add department to database
   },
-// WHEN I choose to add a role
-// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+  // WHEN I choose to add a role
+  // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
   {
     type: 'input',
     name: 'role',
@@ -50,7 +41,7 @@ const questions = [
       }
     }
   },
-    {
+  {
     type: 'input',
     name: 'salary',
     message: "Please enter the salary for the role:",
@@ -63,7 +54,7 @@ const questions = [
       }
     }
   },
-    {
+  {
     type: 'input',
     name: 'roleDepartment',
     message: "Please enter the name of the department for the new role:",
@@ -76,10 +67,9 @@ const questions = [
       }
     }
   },
-// add all of these into a role and add the new role to the database
 
-// WHEN I choose to add an employee
-// THEN I am prompted to enter the employee’s first name, last name, role, and manager and that employee is added to the database
+  // WHEN I choose to add an employee
+  // THEN I am prompted to enter the employee’s first name, last name, role, and manager and that employee is added to the database
   {
     type: 'input',
     name: 'firstName',
@@ -93,11 +83,11 @@ const questions = [
       }
     }
   },
-    {
+  {
     type: 'input',
     name: 'lastName',
     message: "Please enter the last name of the employee:",
-    validate: lastName  => {
+    validate: lastName => {
       if (lastName) {
         return true;
       } else {
@@ -106,7 +96,7 @@ const questions = [
       }
     }
   },
-    {
+  {
     type: 'input',
     name: 'employeeRole',
     message: "Please enter the role of the employee:",
@@ -119,7 +109,7 @@ const questions = [
       }
     }
   },
-      {
+  {
     type: 'input',
     name: 'employeeManager',
     message: "Please enter the Manager of the employee:",
@@ -132,10 +122,39 @@ const questions = [
       }
     }
   },
-  // add all of these into a role and add the new role to the database
 
-// WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
+  // WHEN I choose to update an employee role
+  // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
 ];
 
-inquirer.prompt(questions);
+inquirer
+  .prompt(questions)
+  .then((answers) => {
+  // WHEN I view all departments
+  // I am presented with a formatted table showing department names and department ids
+    if (answers.action == "View all departments") {
+      db.query('SELECT * FROM department',
+        function (err, results, fields) {
+          console.table(results);
+        }
+      )
+    }
+  // WHEN I choose to view all roles
+  // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+    if (answers.action == "View all roles") {
+      db.query('SELECT * FROM role',
+      function (err, results, fields){
+        console.table(results);
+      })
+    }
+  // WHEN I choose to view all employees
+  // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+    if(answers.action == "View all employees") {
+      db.query('SELECT * FROM employee', 
+      function (err, results, fields){
+        console.table(results);
+      })
+    }
+  });
+
+
