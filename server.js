@@ -9,7 +9,7 @@ const questions = [
     type: 'list',
     name: 'action',
     message: 'What type of action would you like to take?',
-    choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update and employee role"]
+    choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update and employee role", "Exit"]
   },
   // WHEN I choose to add a department
   // THEN I am prompted to enter the name of the department and that department is added to the database
@@ -154,6 +154,11 @@ inquirer
       function (err, results, fields){
         console.table(results);
       })
+    }
+
+    // Exit
+      if(answers.action == "Exit") {
+      questions.complete();
     }
   });
 
