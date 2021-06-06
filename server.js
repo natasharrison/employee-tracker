@@ -3,6 +3,24 @@ const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
 
+const roleDepartment = async function () {
+      var roleDepartment = [];
+      var promiseWrapper = function () {
+        return new Promise((resolve) => {
+          db.query('SELECT * FROM department', 
+          function (err, results, field) {
+            if (err) throw err;
+            for (var i = 0; i < results.length; i++) {
+              roleDepartment.push(results[i].roleDepartment);
+            }
+            resolve("resolved");
+          });
+        });
+      };
+      await promiseWrapper();
+      return roleDepartment;
+    };
+
 // array of questions for user input 
 const mainQuestion = [
   {
@@ -10,10 +28,8 @@ const mainQuestion = [
     name: 'action',
     message: 'What type of action would you like to take?',
     choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role", "Exit"]
-  }
+  },
 ];
-
-const deptChoices = [db.query('SELECT department_name FROM department')];
 
 // ask this question once 'add a department' is selected
 const deptQuestion = [
@@ -68,8 +84,8 @@ const roleQuestion = [
     type: 'list',
     name: 'roleDepartment',
     message: "Please select the appropriate Department for the new role:",
-    choices:  deptChoices
-  }
+    choices: [roleDepartment]
+    }
 ];
 
 // ask this question once 'add an employee is selected 
@@ -172,22 +188,21 @@ inquirer.prompt(mainQuestion)
           console.log(answers.department)
           db.query("INSERT INTO department (department_name) VALUES (?)", [answers.department])
           db.query('SELECT * FROM department',
-          function (err, results, fields) {
-            console.table(results)
-          })
+            function (err, results, fields) {
+              console.table(results)
+            })
         })
     }
 
     if (answers.action == "Add a role") {
       inquirer.prompt(roleQuestion)
         .then(answers => {
-          db.query("INSERT INTO employeeRole (title, salary) VALUES (?, ?)", [answers.role, answers.salary])
-          // db.query("INSERT INTO employeeRole (roleDepartment) VALUES (?)", [answers.roleDepartment])
+          db.query("INSERT INTO employeeRole (title, salary, department_id) VALUES (?, ?, ?)", [answers.role, answers.salary, answers.roleDepartment])
 
           db.query('SELECT * FROM employeeRole',
-          function (err, results, fields) {
-            console.table(results)
-          })
+            function (err, results, fields) {
+              console.table(results)
+            })
         })
     }
 
@@ -198,9 +213,9 @@ inquirer.prompt(mainQuestion)
           // db.query("INSERT INTO employee (employeeRole_id) VALUES (?)", [answers.employeeRole])
           // db.query("INSERT INTO employee (manager_id) VALUES (?)", [answers.employeeManager])
           db.query('SELECT * FROM employee',
-          function (err, results, fields) {
-            console.table(results)
-          })
+            function (err, results, fields) {
+              console.table(results)
+            })
         })
     }
 
