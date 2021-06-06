@@ -11,7 +11,7 @@ const roleDepartment = async function () {
           function (err, results, field) {
             if (err) throw err;
             for (var i = 0; i < results.length; i++) {
-              roleDepartment.push(results[i].roleDepartment);
+              roleDepartment.push(results[i].department_name);
             }
             resolve("resolved");
           });
