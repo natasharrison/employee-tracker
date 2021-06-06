@@ -13,6 +13,8 @@ const mainQuestion = [
   }
 ];
 
+const deptChoices = [db.query('SELECT department_name FROM department')];
+
 // ask this question once 'add a department' is selected
 const deptQuestion = [
   // WHEN I choose to add a department
@@ -66,7 +68,7 @@ const roleQuestion = [
     type: 'list',
     name: 'roleDepartment',
     message: "Please select the appropriate Department for the new role:",
-    choices:  db.query('SELECT department_name FROM department')
+    choices:  deptChoices
   }
 ];
 
