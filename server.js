@@ -4,22 +4,22 @@ const db = require('./db/connection');
 const cTable = require('console.table');
 
 const roleDepartment = async function () {
-      var roleDepartment = [];
-      var promiseWrapper = function () {
-        return new Promise((resolve) => {
-          db.query('SELECT * FROM department', 
-          function (err, results, field) {
-            if (err) throw err;
-            for (var i = 0; i < results.length; i++) {
-              roleDepartment.push(results[i].department_name);
-            }
-            resolve("resolved");
-          });
+  var roleDepartment = [];
+  var promiseWrapper = function () {
+    return new Promise((resolve) => {
+      db.query('SELECT * FROM department',
+        function (err, results, field) {
+          if (err) throw err;
+          for (var i = 0; i < results.length; i++) {
+            roleDepartment.push(results[i].department_name);
+          }
+          resolve("resolved");
         });
-      };
-      await promiseWrapper();
-      return roleDepartment;
-    };
+    });
+  };
+  await promiseWrapper();
+  return roleDepartment;
+};
 
 // array of questions for user input 
 const mainQuestion = [
@@ -50,43 +50,46 @@ const deptQuestion = [
   }
 ];
 
+var roleQuestion = [];
 // ask this question once 'add a role' is selected
-const roleQuestion = [
-  // WHEN I choose to add a role
-  // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-  {
-    type: 'input',
-    name: 'role',
-    message: "Please enter the name of the role:",
-    validate: roleName => {
-      if (roleName) {
-        return true;
-      } else {
-        console.log('Please enter the name of the role!');
-        return false;
+roleDepartment().then((departments) => {
+  roleQuestion = [
+    // WHEN I choose to add a role
+    // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+    {
+      type: 'input',
+      name: 'role',
+      message: "Please enter the name of the role:",
+      validate: roleName => {
+        if (roleName) {
+          return true;
+        } else {
+          console.log('Please enter the name of the role!');
+          return false;
+        }
       }
-    }
-  },
-  {
-    type: 'input',
-    name: 'salary',
-    message: "Please enter the salary for the role:",
-    validate: roleSalary => {
-      if (roleSalary) {
-        return true;
-      } else {
-        console.log('Please enter the salary for the role!');
-        return false;
+    },
+    {
+      type: 'input',
+      name: 'salary',
+      message: "Please enter the salary for the role:",
+      validate: roleSalary => {
+        if (roleSalary) {
+          return true;
+        } else {
+          console.log('Please enter the salary for the role!');
+          return false;
+        }
       }
+    },
+    {
+      type: 'list',
+      name: 'roleDepartment',
+      message: "Please select the appropriate Department for the new role:",
+      choices: departments
     }
-  },
-  {
-    type: 'list',
-    name: 'roleDepartment',
-    message: "Please select the appropriate Department for the new role:",
-    choices: [roleDepartment]
-    }
-];
+  ];
+});
 
 // ask this question once 'add an employee is selected 
 const employeeQuestion = [
@@ -151,7 +154,6 @@ const updateEmployee = [
   // WHEN I choose to update an employee role
   // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
 ];
-
 
 inquirer.prompt(mainQuestion)
   //answers = {}
