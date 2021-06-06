@@ -63,17 +63,10 @@ const roleQuestion = [
     }
   },
   {
-    type: 'input',
+    type: 'list',
     name: 'roleDepartment',
-    message: "Please enter the name of the department for the new role:",
-    validate: roleDept => {
-      if (roleDept) {
-        return true;
-      } else {
-        console.log('Please enter the name of the department for the new role!');
-        return false;
-      }
-    }
+    message: "Please select the appropriate Department for the new role:",
+    choices:  db.query('SELECT department_name FROM department')
   }
 ];
 
@@ -174,21 +167,38 @@ inquirer.prompt(mainQuestion)
     if (answers.action == "Add a department") {
       inquirer.prompt(deptQuestion)
         .then(answers => {
-          console.log(answers);
+          console.log(answers.department)
+          db.query("INSERT INTO department (department_name) VALUES (?)", [answers.department])
+          db.query('SELECT * FROM department',
+          function (err, results, fields) {
+            console.table(results)
+          })
         })
     }
 
     if (answers.action == "Add a role") {
       inquirer.prompt(roleQuestion)
         .then(answers => {
-          console.log(answers);
+          db.query("INSERT INTO employeeRole (title, salary) VALUES (?, ?)", [answers.role, answers.salary])
+          // db.query("INSERT INTO employeeRole (roleDepartment) VALUES (?)", [answers.roleDepartment])
+
+          db.query('SELECT * FROM employeeRole',
+          function (err, results, fields) {
+            console.table(results)
+          })
         })
     }
 
     if (answers.action == "Add an employee") {
       inquirer.prompt(employeeQuestion)
         .then(answers => {
-          console.log(answers);
+          db.query("INSERT INTO employee (first_name, last_name) VALUES (?, ?)", [answers.firstName, answers.lastName])
+          // db.query("INSERT INTO employee (employeeRole_id) VALUES (?)", [answers.employeeRole])
+          // db.query("INSERT INTO employee (manager_id) VALUES (?)", [answers.employeeManager])
+          db.query('SELECT * FROM employee',
+          function (err, results, fields) {
+            console.table(results)
+          })
         })
     }
 
