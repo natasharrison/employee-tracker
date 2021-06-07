@@ -234,18 +234,11 @@ inquirer.prompt(mainQuestion)
               console.table(results)
             })
         })
-    }
-
+    } 
     if (answers.action == "Update an employee role") {
       inquirer.prompt(updateEmployee)
         .then(answers => {
           console.log(answers);
         })
-    }
-  }
-    //   .then(answers => {
-    //   inquirer.prompt(mainQuestion)
-    // })
-  );
-
-
+    } 
+  });
