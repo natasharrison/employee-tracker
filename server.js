@@ -68,6 +68,15 @@ const deptQuestion = [
   }
 ];
 
+// quit or exit question
+const loopQuestion = [
+  {
+    type: 'confirm',
+    name: 'loop',
+    message: "Would you like to take another action?"
+  }
+];
+
 var roleQuestion = [];
 // ask this question once 'add a role' is selected
 roleDepartment().then((departments) => {
@@ -170,75 +179,90 @@ const updateEmployee = [
   // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
 ];
 
-inquirer.prompt(mainQuestion)
-  //answers = {}
-  .then(answers => {
-    // WHEN I view all departments
-    // I am presented with a formatted table showing department names and department ids
-    if (answers.action == "View all departments") {
-      db.query('SELECT * FROM department',
-        function (err, results, fields) {
-          console.table(results);
-        }
-      )
-    }
-    // WHEN I choose to view all roles
-    // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-    if (answers.action == "View all roles") {
-      db.query('SELECT * FROM employeeRole',
-        function (err, results, fields) {
-          console.table(results);
-        })
-    }
-    // WHEN I choose to view all employees
-    // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-    if (answers.action == "View all employees") {
-      db.query('SELECT * FROM employee',
-        function (err, results, fields) {
-          console.table(results);
-        })
-    }
+function init() {
+  inquirer.prompt(mainQuestion)
+    //answers = {}
+    .then(answers => {
+      // WHEN I view all departments
+      // I am presented with a formatted table showing department names and department ids
+      if (answers.action == "View all departments") {
+        db.query('SELECT * FROM department',
+          function (err, results, fields) {
+            console.table(results);
+          }
+        )
+      }
+      // WHEN I choose to view all roles
+      // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+      if (answers.action == "View all roles") {
+        db.query('SELECT * FROM employeeRole',
+          function (err, results, fields) {
+            console.table(results);
+          })
+      }
+      // WHEN I choose to view all employees
+      // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+      if (answers.action == "View all employees") {
+        db.query('SELECT * FROM employee',
+          function (err, results, fields) {
+            console.table(results);
+          })
+      }
 
-    if (answers.action == "Add a department") {
-      inquirer.prompt(deptQuestion)
-        .then(answers => {
-          console.log(answers.department)
-          db.query("INSERT INTO department (department_name) VALUES (?)", [answers.department])
-          db.query('SELECT * FROM department',
-            function (err, results, fields) {
-              console.table(results)
-            })
-        })
+      if (answers.action == "Add a department") {
+        inquirer.prompt(deptQuestion)
+          .then(answers => {
+            console.log(answers.department)
+            db.query("INSERT INTO department (department_name) VALUES (?)", [answers.department])
+            db.query('SELECT * FROM department',
+              function (err, results, fields) {
+                console.table(results)
+              })
+          })
+      }
+
+      if (answers.action == "Add a role") {
+        inquirer.prompt(roleQuestion)
+          .then(answers => {
+            db.query("INSERT INTO employeeRole (title, salary, department_id) VALUES (?, ?, ?)", [answers.role, answers.salary, answers.roleDepartment])
+
+            db.query('SELECT * FROM employeeRole',
+              function (err, results, fields) {
+                console.table(results)
+              })
+          })
+      }
+
+      if (answers.action == "Add an employee") {
+        inquirer.prompt(employeeQuestion)
+          .then(answers => {
+            db.query("INSERT INTO employee (first_name, last_name) VALUES (?, ?)", [answers.firstName, answers.lastName])
+            // db.query("INSERT INTO employee (employeeRole_id) VALUES (?)", [answers.employeeRole])
+            // db.query("INSERT INTO employee (manager_id) VALUES (?)", [answers.employeeManager])
+            db.query('SELECT * FROM employee',
+              function (err, results, fields) {
+                console.table(results)
+              })
+          })
+      }
+      if (answers.action == "Update an employee role") {
+        inquirer.prompt(updateEmployee)
+          .then(answers => {
+            console.log(answers);
+          })
+      }
+    })
+  };
+
+init();
+
+
+inquirer.prompt(loopQuestion)
+.then (answers => {
+    if (answer.loop == "true") {
+      inquirer.prompt(mainQuestion)
+    } else {
+      quit();
     }
-
-    if (answers.action == "Add a role") {
-      inquirer.prompt(roleQuestion)
-        .then(answers => {
-          db.query("INSERT INTO employeeRole (title, salary, department_id) VALUES (?, ?, ?)", [answers.role, answers.salary, answers.roleDepartment])
-
-          db.query('SELECT * FROM employeeRole',
-            function (err, results, fields) {
-              console.table(results)
-            })
-        })
-    }
-
-    if (answers.action == "Add an employee") {
-      inquirer.prompt(employeeQuestion)
-        .then(answers => {
-          db.query("INSERT INTO employee (first_name, last_name) VALUES (?, ?)", [answers.firstName, answers.lastName])
-          // db.query("INSERT INTO employee (employeeRole_id) VALUES (?)", [answers.employeeRole])
-          // db.query("INSERT INTO employee (manager_id) VALUES (?)", [answers.employeeManager])
-          db.query('SELECT * FROM employee',
-            function (err, results, fields) {
-              console.table(results)
-            })
-        })
-    } 
-    if (answers.action == "Update an employee role") {
-      inquirer.prompt(updateEmployee)
-        .then(answers => {
-          console.log(answers);
-        })
-    } 
   });
+
