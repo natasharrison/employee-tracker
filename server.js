@@ -189,6 +189,7 @@ function init() {
         db.query('SELECT * FROM department',
           function (err, results, fields) {
             console.table(results);
+            quit();
           }
         )
       }
@@ -198,6 +199,7 @@ function init() {
         db.query('SELECT * FROM employeeRole',
           function (err, results, fields) {
             console.table(results);
+            quit();
           })
       }
       // WHEN I choose to view all employees
@@ -206,6 +208,7 @@ function init() {
         db.query('SELECT * FROM employee',
           function (err, results, fields) {
             console.table(results);
+            quit();
           })
       }
 
@@ -217,6 +220,7 @@ function init() {
             db.query('SELECT * FROM department',
               function (err, results, fields) {
                 console.table(results)
+                quit();
               })
           })
       }
@@ -229,6 +233,7 @@ function init() {
             db.query('SELECT * FROM employeeRole',
               function (err, results, fields) {
                 console.table(results)
+                quit();
               })
           })
       }
@@ -242,6 +247,7 @@ function init() {
             db.query('SELECT * FROM employee',
               function (err, results, fields) {
                 console.table(results)
+                quit();
               })
           })
       }
@@ -249,20 +255,24 @@ function init() {
         inquirer.prompt(updateEmployee)
           .then(answers => {
             console.log(answers);
+            quit();
           })
       }
     })
-  };
+};
 
 init();
 
 
-inquirer.prompt(loopQuestion)
-.then (answers => {
-    if (answer.loop == "true") {
-      inquirer.prompt(mainQuestion)
-    } else {
-      quit();
-    }
-  });
+function quit() {
+  inquirer.prompt(loopQuestion)
+    .then(answers => {
+      if (answers.loop == true) {
+        init();
+      } else {
+        db.end()
+        console.log('Thank you!');
+      }
+    })
+};
 
