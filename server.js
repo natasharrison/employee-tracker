@@ -21,13 +21,31 @@ const roleDepartment = async function () {
   return roleDepartment;
 };
 
+const employeeRole = async function () {
+  var employeeRole = [];
+  var promiseWrapper = function () {
+    return new Promise((resolve) => {
+      db.query('SELECT * FROM employeeRole',
+        function (err, results, field) {
+          if (err) throw err;
+          for (var i = 0; i < results.length; i++) {
+            employeeRole.push(results[i].title);
+          }
+          resolve("resolved");
+        });
+    });
+  };
+  await promiseWrapper();
+  return employeeRole;
+};
+
 // array of questions for user input 
 const mainQuestion = [
   {
     type: 'list',
     name: 'action',
     message: 'What type of action would you like to take?',
-    choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role", "Exit"]
+    choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role"]
   },
 ];
 
@@ -91,65 +109,62 @@ roleDepartment().then((departments) => {
   ];
 });
 
+var employeeQuestion = [];
 // ask this question once 'add an employee is selected 
-const employeeQuestion = [
-  // WHEN I choose to add an employee
-  // THEN I am prompted to enter the employee’s first name, last name, role, and manager and that employee is added to the database
-  {
-    type: 'input',
-    name: 'firstName',
-    message: "Please enter the first name of the employee:",
-    validate: firstName => {
-      if (firstName) {
-        return true;
-      } else {
-        console.log('Please enter the first name of the employee!');
-        return false;
+employeeRole().then((titles) => {
+  employeeQuestion = [
+    // WHEN I choose to add an employee
+    // THEN I am prompted to enter the employee’s first name, last name, role, and manager and that employee is added to the database
+    {
+      type: 'input',
+      name: 'firstName',
+      message: "Please enter the first name of the employee:",
+      validate: firstName => {
+        if (firstName) {
+          return true;
+        } else {
+          console.log('Please enter the first name of the employee!');
+          return false;
+        }
+      }
+    },
+    {
+      type: 'input',
+      name: 'lastName',
+      message: "Please enter the last name of the employee:",
+      validate: lastName => {
+        if (lastName) {
+          return true;
+        } else {
+          console.log('Please enter the last name for the employee!');
+          return false;
+        }
+      }
+    },
+    {
+      type: 'list',
+      name: 'employeeRole',
+      message: "Please select the role of the employee:",
+      choices: titles
+    },
+    // this should also be looped through an array of Managers 
+    {
+      type: 'input',
+      name: 'employeeManager',
+      message: "Please enter the Manager of the employee:",
+      validate: employeeManager => {
+        if (employeeManager) {
+          return true;
+        } else {
+          console.log('Please enter the Manager of the employee!');
+          return false;
+        }
       }
     }
-  },
-  {
-    type: 'input',
-    name: 'lastName',
-    message: "Please enter the last name of the employee:",
-    validate: lastName => {
-      if (lastName) {
-        return true;
-      } else {
-        console.log('Please enter the last name for the employee!');
-        return false;
-      }
-    }
-  },
-  {
-    type: 'input',
-    name: 'employeeRole',
-    message: "Please enter the role of the employee:",
-    validate: employeeRole => {
-      if (employeeRole) {
-        return true;
-      } else {
-        console.log('Please enter the role of the employee!');
-        return false;
-      }
-    }
-  },
-  {
-    type: 'input',
-    name: 'employeeManager',
-    message: "Please enter the Manager of the employee:",
-    validate: employeeManager => {
-      if (employeeManager) {
-        return true;
-      } else {
-        console.log('Please enter the Manager of the employee!');
-        return false;
-      }
-    }
-  }
-];
+  ]
+});
 
-// ask this question once 'update an employee is selected 
+// ask this question once 'update an employee' is selected 
 const updateEmployee = [
   // WHEN I choose to update an employee role
   // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
@@ -227,11 +242,10 @@ inquirer.prompt(mainQuestion)
           console.log(answers);
         })
     }
-
-    // Exit
-    if (answers.action == "Exit") {
-      questions.complete();
-    }
-  });
+  }
+    //   .then(answers => {
+    //   inquirer.prompt(mainQuestion)
+    // })
+  );
 
 
